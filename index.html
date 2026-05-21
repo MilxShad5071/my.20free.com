@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+  <title>20 ЖЫЛДЫҚ | Сыныптастар кездесуі</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,700;0,800;1,400&display=swap" rel="stylesheet">
+  
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      padding: 16px;
+      position: relative;
+      background: #0f0f1a;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=800');
+      background-size: cover;
+      background-position: center center;
+      background-attachment: fixed;
+      opacity: 0.4;
+      z-index: -3;
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(10, 10, 25, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: -2;
+      pointer-events: none;
+    }
+
+    .container {
+      max-width: 550px;
+      margin: 0 auto;
+      padding: 0 0 24px 0;
+      position: relative;
+      z-index: 2;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes floatHeart {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-100px) scale(1.5); opacity: 0; }
+    }
+
+    @keyframes pulse {
+      0% { box-shadow: 0 0 0 0 rgba(180, 95, 43, 0.4); }
+      70% { box-shadow: 0 0 0 12px rgba(180, 95, 43, 0); }
+      100% { box-shadow: 0 0 0 0 rgba(180, 95, 43, 0); }
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-8px); }
+    }
+
+    .card {
+      background: rgba(255, 250, 240, 0.94);
+      backdrop-filter: blur(8px);
+      border-radius: 28px;
+      box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.35);
+      overflow: hidden;
+      margin-bottom: 20px;
+      transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+      animation: fadeInUp 0.6s ease-out;
+      border: 1px solid rgba(255, 215, 175, 0.5);
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card-inner {
+      padding: 20px 18px;
+    }
+
+    /* === ВИДЕО КОНТЕЙНЕР === */
+    .video-container {
+      width: 100%;
+      margin-bottom: 20px;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.4);
+      background: #1a1a2e;
+      animation: fadeInUp 0.7s ease-out;
+      border: 1px solid rgba(255, 215, 175, 0.6);
+      position: relative;
+      min-height: 300px;
+    }
+    
+    .reunion-video {
+      width: 100%;
+      display: block;
+      cursor: pointer;
+      background: #1e1a2f;
+      object-fit: cover;
+      aspect-ratio: 9 / 16;
+    }
+    
+    .video-loader {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 3;
+      backdrop-filter: blur(4px);
+      transition: opacity 0.2s ease;
+      pointer-events: none;
+      border-radius: 28px;
+    }
+    
+    .video-loader.hide {
+      opacity: 0;
+      visibility: hidden;
+    }
+    
+    .loader-spinner {
+      width: 48px;
+      height: 48px;
+      border: 3px solid rgba(255,215,175,0.3);
+      border-top: 3px solid #e7b27d;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+    }
+    
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    .video-control-hint {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 5;
+      pointer-events: none;
+    }
+    
+    .video-badge {
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(8px);
+      padding: 6px 16px;
+      border-radius: 60px;
+      color: #ffd9b5;
+      font-size: 0.75rem;
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      pointer-events: auto;
+      cursor: pointer;
+      border: 1px solid rgba(255, 215, 175, 0.2);
+      transition: 0.2s;
+    }
+    
+    .video-badge:active {
+      transform: scale(0.96);
+    }
+    
+    /* Подсказка для запуска музыки */
+    .music-hint {
+      position: fixed;
+      bottom: 90px;
+      right: 20px;
+      background: #bc7640;
+      color: white;
+      padding: 8px 16px;
+      border-radius: 40px;
+      font-size: 0.75rem;
+      font-weight: 500;
+      z-index: 101;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      animation: bounce 1s ease infinite;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      white-space: nowrap;
+    }
+    
+    .music-hint i {
+      font-size: 1rem;
+    }
+    
+    .music-hint.hide {
+      display: none;
+    }
+    
+    .hero {
+      text-align: center;
+      background: rgba(30, 25, 55, 0.88);
+      backdrop-filter: blur(10px);
+      color: #f5e9d9;
+    }
+
+    .hero h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffddb0;
+      text-shadow: 0 0 10px rgba(255,215,150,0.7);
+    }
+
+    .anniversary-badge {
+      display: inline-block;
+      background: linear-gradient(135deg, #d49c6c, #b45f2b);
+      padding: 8px 20px;
+      border-radius: 60px;
+      font-weight: 800;
+      font-size: 1.4rem;
+      color: white;
+      margin: 10px 0;
+      font-family: 'Playfair Display', serif;
+      animation: pulse 2s infinite;
+    }
+
+    .date-tag {
+      background: #e0b082cc;
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 40px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      color: #2c1a0c;
+      margin-bottom: 8px;
+    }
+
+    .invite-text {
+      font-size: 0.95rem;
+      line-height: 1.6;
+      background: rgba(255, 248, 235, 0.92);
+      border-radius: 20px;
+      padding: 18px;
+      margin: 16px 0 0;
+      border-left: 6px solid #e7b27d;
+      color: #2e241f;
+    }
+
+    .signature {
+      margin-top: 12px;
+      font-style: italic;
+      text-align: right;
+    }
+
+    .timer-section {
+      text-align: center;
+    }
+    .timer-title {
+      font-size: 1rem;
+      color: #b45f2b;
+      margin-bottom: 12px;
+      font-weight: 600;
+    }
+    .timer-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .time-unit {
+      background: rgba(0, 0, 0, 0.6);
+      border-radius: 16px;
+      padding: 8px 10px;
+      min-width: 65px;
+      text-align: center;
+      border: 1px solid rgba(255, 200, 150, 0.4);
+    }
+    .time-number {
+      font-size: 1.8rem;
+      font-weight: 800;
+      color: #ffddb0;
+      line-height: 1;
+      font-family: monospace;
+    }
+    .time-label {
+      font-size: 0.6rem;
+      text-transform: uppercase;
+      color: #d4a373;
+      margin-top: 4px;
+    }
+    .event-hint {
+      font-size: 0.7rem;
+      color: #c9b6a0;
+      margin-top: 10px;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      text-align: center;
+      margin-top: 12px;
+    }
+
+    .calendar-weekday {
+      font-weight: 700;
+      color: #a75d2a;
+      font-size: 0.7rem;
+      padding: 6px 0;
+      background: #f7ebdd;
+      border-radius: 12px;
+    }
+
+    .calendar-day {
+      background: #fffaf3;
+      border-radius: 12px;
+      padding: 8px 3px;
+      font-weight: 500;
+      font-size: 0.8rem;
+    }
+
+    .calendar-day.event-day {
+      background: #e7c29b;
+      color: #5e2e12;
+      font-weight: 800;
+      position: relative;
+    }
+
+    .calendar-day.event-day::after {
+      content: "🎓";
+      font-size: 0.6rem;
+      margin-left: 3px;
+    }
+
+    .program-day {
+      margin-top: 16px;
+      background: rgba(245, 235, 215, 0.5);
+      border-radius: 20px;
+      padding: 12px;
+    }
+    .program-day h3 {
+      font-size: 1.2rem;
+      color: #b45f2b;
+      margin-bottom: 12px;
+      border-left: 4px solid #e7b27d;
+      padding-left: 12px;
+    }
+    .program-item {
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px dashed #e2cfba;
+      flex-wrap: wrap;
+    }
+    .program-time {
+      min-width: 90px;
+      font-weight: 800;
+      font-size: 1rem;
+      color: #b45f2b;
+    }
+    .program-desc {
+      font-weight: 500;
+      color: #3c2a21;
+      font-size: 0.92rem;
+    }
+    .program-desc i {
+      width: 26px;
+      color: #d89c5c;
+      margin-right: 6px;
+    }
+
+    .address-card-photo {
+      background-size: cover;
+      background-position: center;
+      background-image: url('https://images.pexels.com/photos/258154/pexels-photo-258154.jpeg?auto=compress&cs=tinysrgb&w=600');
+      position: relative;
+    }
+
+    .address-card-photo::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 28px;
+      z-index: 0;
+    }
+
+    .address-card-photo .card-inner {
+      position: relative;
+      z-index: 2;
+      background: rgba(20, 18, 35, 0.75);
+      backdrop-filter: blur(4px);
+      color: #fff7e8;
+    }
+
+    .address-block {
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 18px;
+      padding: 14px;
+      margin-top: 8px;
+    }
+
+    .address-block i {
+      color: #ffd8b0;
+      width: 28px;
+    }
+
+    .map-link {
+      background: rgba(255, 255, 245, 0.9);
+      border-radius: 40px;
+      padding: 10px;
+      margin-top: 12px;
+      text-align: center;
+    }
+
+    .map-link a {
+      text-decoration: none;
+      font-weight: 600;
+      color: #b45f2b;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    label {
+      font-weight: 600;
+      margin-bottom: 6px;
+      display: block;
+      color: #5f351b;
+      font-size: 0.9rem;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 50px;
+      border: 1px solid #e2cfbc;
+      background: white;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-top: 8px;
+    }
+
+    .radio-group label {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: normal;
+      font-size: 1rem;
+    }
+
+    button {
+      background: #bc7640;
+      border: none;
+      color: white;
+      padding: 14px 20px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: 0.2s;
+      width: 100%;
+    }
+
+    button:active {
+      transform: scale(0.97);
+    }
+
+    .rsvp-message {
+      margin-top: 14px;
+      text-align: center;
+      font-weight: 600;
+      padding: 10px;
+      border-radius: 50px;
+      background: #e7dbcfe6;
+      font-size: 0.85rem;
+    }
+
+    .music-btn {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #bc7640;
+      color: white;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+      z-index: 100;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+      transition: 0.2s;
+    }
+
+    .music-btn:active {
+      transform: scale(0.92);
+    }
+
+    .floating-heart {
+      position: fixed;
+      font-size: 24px;
+      pointer-events: none;
+      z-index: 200;
+      animation: floatHeart 2s ease-out forwards;
+    }
+
+    .footer-note {
+      text-align: center;
+      font-size: 0.7rem;
+      color: #f0e2d0;
+      background: rgba(0, 0, 0, 0.5);
+      border-radius: 30px;
+      padding: 12px;
+      margin-top: 8px;
+    }
+
+    .admin-panel details {
+      background: rgba(245, 235, 220, 0.92);
+      border-radius: 20px;
+      padding: 8px 14px;
+      font-size: 0.75rem;
+    }
+
+    @media (max-width: 480px) {
+      body { padding: 12px; }
+      .hero h1 { font-size: 1.5rem; }
+      .anniversary-badge { font-size: 1.2rem; }
+      .program-time { min-width: 75px; font-size: 0.85rem; }
+      .time-number { font-size: 1.4rem; }
+      .time-unit { min-width: 55px; padding: 6px 8px; }
+      .video-container { border-radius: 24px; min-height: 260px; }
+      .music-hint { bottom: 85px; right: 15px; padding: 6px 12px; font-size: 0.7rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  
+  <div class="video-container">
+    <div id="videoLoader" class="video-loader">
+      <div class="loader-spinner"></div>
+    </div>
+    <video id="reunionVideo" class="reunion-video" playsinline muted loop preload="auto" poster="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 16'%3E%3Crect width='9' height='16' fill='%231e1a2f'/%3E%3Ctext x='1' y='8' fill='%23e7b27d' font-size='2'%3E🎓%3C/text%3E%3C/svg%3E">
+      <source src="tt.mp4" type="video/mp4">
+      Сіздің браузеріңіз видео тегін қолдамайды.
+    </video>
+    <div class="video-control-hint">
+      <span class="video-badge" id="videoPlayPauseHint"><i class="fas fa-play"></i> Естелік бейне <i class="fas fa-film"></i></span>
+    </div>
+  </div>
+
+  <div class="card hero">
+    <div class="card-inner">
+      <div class="date-tag"><i class="far fa-calendar-alt"></i> 25-28 МАМЫР, 2026</div>
+      <div class="anniversary-badge">20 ЖЫЛДЫҚ 🎓</div>
+      <h1>ҚҰРМЕТТІ СЫНЫПТАСТАР!</h1>
+      <div class="invite-text">
+        <p><i class="fas fa-graduation-cap"></i> <strong>Мектеп бітіргенімізге 20 жыл толды!</strong></p>
+        <p>Уақыт зымырап өтсе де, мектеп күндері, бірге өткен шақ, күлкі мен достық ешқашан ұмытылмайды.<br> Біз қайтадан қауышып, әрқайсымыздың тағдырымыз бен жетістіктерімізбен бөлісетін кешке шақырамыз.</p>
+        <p><strong>Ескі достар, жаңа кездесу — бір шаңырақ астында!</strong></p>
+        <div class="signature">✨ СЫНЫПТАСТАРДЫҢ БАСТАМАСЫМЕН ✨</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner timer-section">
+      <div class="timer-title">
+        <i class="fas fa-hourglass-half"></i> <strong>28 мамыр, сағат 19:00</strong> мерейтойына дейін
+      </div>
+      <div class="timer-boxes">
+        <div class="time-unit"><div class="time-number" id="timerDays">00</div><div class="time-label">Күн</div></div>
+        <div class="time-unit"><div class="time-number" id="timerHours">00</div><div class="time-label">Сағат</div></div>
+        <div class="time-unit"><div class="time-number" id="timerMinutes">00</div><div class="time-label">Минут</div></div>
+        <div class="time-unit"><div class="time-number" id="timerSeconds">00</div><div class="time-label">Секунд</div></div>
+      </div>
+      <div class="event-hint"><i class="fas fa-map-marker-alt"></i> ART TRIUMF мейрамханасы</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner">
+      <h2 style="font-size: 1.3rem;"><i class="fas fa-calendar-alt"></i> Мамыр 2026</h2>
+      <div class="calendar-grid" id="calendarGrid"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner">
+      <h2 style="font-size: 1.3rem; margin-bottom: 6px;"><i class="fas fa-clock"></i> МЕРЕЙТОЙЛЫҚ БАҒДАРЛАМА</h2>
+      <div class="program-section">
+        <div class="program-day">
+          <h3><i class="fas fa-calendar-day"></i> 25 МАМЫР</h3>
+          <div class="program-item"><div class="program-time">09:00</div><div class="program-desc"><i class="fas fa-school"></i> Мектепке жиналу (туған мектеп алды)</div></div>
+          <div class="program-item"><div class="program-time">13:00</div><div class="program-desc"><i class="fas fa-mosque"></i>Аль-Хафиз мешітіне бару, ас берегу, бата тілеу</div></div>
+        </div>
+        <div class="program-day">
+          <h3><i class="fas fa-calendar-day"></i> 28 МАМЫР</h3>
+          <div class="program-item"><div class="program-time">19:00</div><div class="program-desc"><i class="fas fa-champagne-glasses"></i> ART TRIUMF МЕЙРАМХАНАСЫ – салтанатты кеш</div></div>
+          <div class="program-item"><div class="program-time">19:30</div><div class="program-desc"><i class="fas fa-microphone-alt"></i> Құттықтау сөздер, естелік бейнеролик</div></div>
+          <div class="program-item"><div class="program-time">20:30</div><div class="program-desc"><i class="fas fa-utensils"></i> Дастархан басы, сыныптастар арасында әңгіме</div></div>
+          <div class="program-item"><div class="program-time">22:00</div><div class="program-desc"><i class="fas fa-music"></i> Музыка, би кеші, сюрприздер</div></div>
+        </div>
+        <div style="margin-top: 12px; font-size: 0.75rem; background: #f7ebdd80; border-radius: 16px; padding: 8px; text-align: center;">
+          <i class="fas fa-hourglass-half"></i> Барлық сыныптастарды осы маңызды күндерде бірге болуға шақырамыз!
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card address-card-photo">
+    <div class="card-inner">
+      <h2 style="color:#FFE6CC;"><i class="fas fa-location-dot"></i> НЕГІЗГІ КЕШ ӨТЕТІН ОРЫН</h2>
+      <div class="address-block">
+        <p><i class="fas fa-building"></i> <strong>ART TRIUMF МЕЙРАМХАНАСЫ</strong></p>
+        <p><i class="fas fa-city"></i> Тараз қаласы, Ташкентская 142</p>
+        <p><i class="fas fa-calendar-alt"></i> 28 мамыр 2026 · 19:00</p>
+      </div>
+      <div class="map-link">
+        <i class="fas fa-map-marker-alt"></i>
+        <a href="https://maps.google.com/?q=Тараз,Ташкентская,142" target="_blank">Картадан ашу</a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-inner">
+      <h2><i class="fas fa-envelope-open-text"></i> Қатысуыңызды растаңыз</h2>
+      <p style="margin-bottom: 14px; font-size: 0.9rem;">Сыныптас, жауабыңыз маңызды! Қай күндерге қатысатыныңызды төмендегі форма арқылы жазыңыз.</p>
+      <form id="rsvpForm">
+        <div class="form-group"><label><i class="fas fa-user"></i> Аты-жөніңіз</label><input type="text" id="fullname" placeholder="Мысалы: Айжан Мұратқызы" required></div>
+        <div class="form-group"><label><i class="fas fa-phone-alt"></i> Телефон / WhatsApp</label><input type="tel" id="phone" placeholder="+7 7__ ___ __ __" required></div>
+        <div class="form-group">
+          <label><i class="fas fa-calendar-check"></i> Қатысу нұсқасы (негізгі)</label>
+          <div class="radio-group">
+            <label><input type="radio" name="attending" value="Келемін! 🎉" required> <i class="fas fa-check-circle" style="color:#42853d;"></i> Келемін!</label>
+            <label><input type="radio" name="attending" value="Келмеймін"> <i class="fas fa-times-circle" style="color:#b85c1a;"></i> Келмеймін</label>
+          </div>
+        </div>
+        <div class="form-group"><label><i class="fas fa-pen-fancy"></i> Тілектер / қосымша адамдар / ескерту</label><input type="text" id="notes" placeholder="Мысалы: 25 мамыр келемін, 28 мамыр +1 адам..."></div>
+        <button type="submit"><i class="fas fa-paper-plane"></i> Жауап жіберу</button>
+      </form>
+      <div id="rsvpStatus" class="rsvp-message" style="display: none;"></div>
+    </div>
+  </div>
+
+  <div class="footer-note">
+    <p><i class="fas fa-heart" style="color:#ffb56e;"></i> 20 жыл бірге өтпесек те, бір-бірімізді есте сақтаймыз! Кездескенше! <i class="fas fa-heart" style="color:#ffb56e;"></i></p>
+    <p style="margin-top: 6px;">25 мамыр (мектеп + мешіт) | 28 мамыр (ART TRIUMF)</p>
+  </div>
+
+  <div id="adminRsvpPanel" class="admin-panel" style="margin-top: 12px;"></div>
+</div>
+
+<!-- Подсказка для запуска музыки -->
+<div id="musicHint" class="music-hint">
+  <i class="fas fa-headphones"></i> <span>🎵 Музыканы қосу үшін басыңыз</span>
+</div>
+
+<button class="music-btn" id="musicToggleBtn"><i class="fas fa-music"></i></button>
+<audio id="bgMusic" loop preload="auto">
+  <source src="муз.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+  (function() {
+    // ========= ТАЙМЕР =========
+    function getTargetDate() { return new Date(2026, 4, 28, 19, 0, 0); }
+    function updateTimer() {
+      const now = new Date();
+      const target = getTargetDate();
+      const diff = target - now;
+      if (diff <= 0) {
+        document.getElementById('timerDays').innerHTML = '00';
+        document.getElementById('timerHours').innerHTML = '00';
+        document.getElementById('timerMinutes').innerHTML = '00';
+        document.getElementById('timerSeconds').innerHTML = '00';
+        return;
+      }
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById('timerDays').innerHTML = days < 10 ? '0' + days : days;
+      document.getElementById('timerHours').innerHTML = hours < 10 ? '0' + hours : hours;
+      document.getElementById('timerMinutes').innerHTML = minutes < 10 ? '0' + minutes : minutes;
+      document.getElementById('timerSeconds').innerHTML = seconds < 10 ? '0' + seconds : seconds;
+    }
+    updateTimer();
+    setInterval(updateTimer, 1000);
+
+    // ========= КАЛЕНДАРЬ =========
+    function buildCalendar() {
+      const year = 2026, month = 4;
+      const firstDayOfMonth = new Date(year, month, 1).getDay();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      let gridHtml = '';
+      const weekdays = ['Дс', 'Сс', 'Ср', 'Бс', 'Жм', 'Сб', 'Жс'];
+      for (let w of weekdays) gridHtml += `<div class="calendar-weekday">${w}</div>`;
+      let startOffset = (firstDayOfMonth + 6) % 7;
+      let dayCounter = 1;
+      for (let i = 0; i < 42; i++) {
+        if (i < startOffset || dayCounter > daysInMonth) {
+          gridHtml += `<div class="calendar-day" style="background:#faf3ea; color:#bba28c;"> </div>`;
+          if (i >= startOffset) dayCounter++;
+          continue;
+        }
+        const isEvent = (dayCounter === 25 || dayCounter === 28);
+        const extraClass = isEvent ? 'event-day' : '';
+        gridHtml += `<div class="calendar-day ${extraClass}">${dayCounter}</div>`;
+        dayCounter++;
+      }
+      document.getElementById('calendarGrid').innerHTML = gridHtml;
+    }
+    buildCalendar();
+
+    // ========= RSVP ЖҮЙЕСІ =========
+    let rsvpList = [];
+    function loadRsvp() { const stored = localStorage.getItem('class20_reunion_full'); if (stored) { try { rsvpList = JSON.parse(stored); } catch(e) {} } }
+    function saveRsvp() { localStorage.setItem('class20_reunion_full', JSON.stringify(rsvpList)); }
+    function escapeHtml(str) { if(!str) return ''; return str.replace(/[&<>]/g, m => m==='&'?'&amp;':m==='<'?'&lt;':m==='>'?'&gt;':m); }
+    function renderAdmin() {
+      const panel = document.getElementById('adminRsvpPanel');
+      if (!panel) return;
+      if (rsvpList.length === 0) { panel.innerHTML = `<details><summary><i class="fas fa-users"></i> Растағандар (0) — әлі жауап жоқ</summary></details>`; return; }
+      let html = `<details open><summary><i class="fas fa-users"></i> Кездесуге растағандар (${rsvpList.length} сыныптас)</summary><div style="max-height:200px; overflow-y:auto;">`;
+      rsvpList.slice().reverse().forEach(r => {
+        const icon = r.attending.includes('Келемін') ? '✅' : '❌';
+        html += `<div style="border-bottom:1px solid #e2cfbc; padding:6px 0;"><strong>${escapeHtml(r.fullname)}</strong> ${icon} ${r.attending}<br><span style="font-size:0.65rem;">📞 ${escapeHtml(r.phone)} | ✏️ ${escapeHtml(r.notes)} | ${r.createdAt}</span></div>`;
+      });
+      html += `</div></details>`;
+      panel.innerHTML = html;
+    }
+    const form = document.getElementById('rsvpForm');
+    const statusDiv = document.getElementById('rsvpStatus');
+    function showMsg(msg, color='#2e6b3e') {
+      statusDiv.style.display = 'block';
+      statusDiv.innerHTML = `<i class="fas fa-info-circle"></i> ${msg}`;
+      statusDiv.style.backgroundColor = `${color}20`;
+      statusDiv.style.borderLeft = `4px solid ${color}`;
+      setTimeout(() => statusDiv.style.display = 'none', 4500);
+    }
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      const fullname = document.getElementById('fullname').value.trim();
+      const phone = document.getElementById('phone').value.trim();
+      const attendingRadio = document.querySelector('input[name="attending"]:checked');
+      const notes = document.getElementById('notes').value.trim();
+      if (!fullname) { showMsg('Аты-жөн жазыңыз!', '#bc6f2c'); return; }
+      if (!phone) { showMsg('Телефон нөмірі', '#bc6f2c'); return; }
+      if (!attendingRadio) { showMsg('Келемін немесе келмеймін таңдаңыз', '#bc6f2c'); return; }
+      const attending = attendingRadio.value;
+      const newResp = { id: Date.now(), fullname, phone, attending, notes: notes || '—', createdAt: new Date().toLocaleString('kk-KZ') };
+      const idx = rsvpList.findIndex(i => i.fullname.toLowerCase()===fullname.toLowerCase() && i.phone===phone);
+      if (idx !== -1) rsvpList[idx] = newResp;
+      else rsvpList.push(newResp);
+      saveRsvp();
+      renderAdmin();
+      showMsg(`${fullname}, рахмет! ${attending.includes('Келемін') ? 'Кездескенше! 🎓' : 'Келе алмайтыныңызды білдік, келесі жолы қауышармыз 💫'}`);
+      form.reset();
+      for(let i=0;i<4;i++) createFloatingHeart();
+    });
+    function createFloatingHeart() {
+      const heart = document.createElement('div');
+      heart.innerHTML = '❤️';
+      heart.classList.add('floating-heart');
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.bottom = '20px';
+      heart.style.fontSize = (20 + Math.random() * 20) + 'px';
+      document.body.appendChild(heart);
+      setTimeout(() => heart.remove(), 2000);
+    }
+    loadRsvp();
+    renderAdmin();
+
+    // ========= ВИДЕО ОПТИМИЗАЦИЯ =========
+    const video = document.getElementById('reunionVideo');
+    const loaderDiv = document.getElementById('videoLoader');
+    const hintBtn = document.getElementById('videoPlayPauseHint');
+    
+    if (video.readyState >= 1) {
+      loaderDiv.classList.add('hide');
+    } else {
+      video.addEventListener('loadeddata', function() { loaderDiv.classList.add('hide'); }, { once: true });
+      video.addEventListener('canplay', function() { loaderDiv.classList.add('hide'); }, { once: true });
+      setTimeout(() => { if (loaderDiv) loaderDiv.classList.add('hide'); }, 1000);
+    }
+    
+    if (hintBtn) {
+      hintBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        if (video.paused) {
+          video.play().then(() => {
+            hintBtn.innerHTML = '<i class="fas fa-pause"></i> Естелік бейне <i class="fas fa-film"></i>';
+          }).catch(() => {});
+        } else {
+          video.pause();
+          hintBtn.innerHTML = '<i class="fas fa-play"></i> Естелік бейне <i class="fas fa-film"></i>';
+        }
+      });
+    }
+    
+    video.addEventListener('play', () => { if (hintBtn) hintBtn.innerHTML = '<i class="fas fa-pause"></i> Естелік бейне <i class="fas fa-film"></i>'; });
+    video.addEventListener('pause', () => { if (hintBtn) hintBtn.innerHTML = '<i class="fas fa-play"></i> Естелік бейне <i class="fas fa-film"></i>'; });
+    video.play().catch(() => {});
+    
+    // ========= МУЗЫКА: АВТОЗАПУСК ПРИ ПЕРВОМ ВЗАИМОДЕЙСТВИИ =========
+    const audioElem = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicToggleBtn');
+    const musicHint = document.getElementById('musicHint');
+    let musicPlaying = false;
+    let musicStarted = false;
+    
+    audioElem.volume = 0.5;
+    
+    function startMusic() {
+      if (musicStarted) return;
+      musicStarted = true;
+      
+      audioElem.play().then(() => {
+        musicPlaying = true;
+        musicBtn.innerHTML = '<i class="fas fa-volume-up"></i>';
+        if (musicHint) musicHint.classList.add('hide');
+        console.log('Музыка запущена');
+      }).catch((error) => {
+        console.log('Не удалось запустить музыку:', error);
+        musicStarted = false;
+        musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+      });
+    }
+    
+    // Кнопка управления музыкой
+    musicBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      if (musicPlaying) {
+        audioElem.pause();
+        musicPlaying = false;
+        musicBtn.innerHTML = '<i class="fas fa-music"></i>';
+        if (musicHint) musicHint.classList.remove('hide');
+      } else {
+        startMusic();
+      }
+    });
+    
+    // Подсказка тоже запускает музыку
+    if (musicHint) {
+      musicHint.addEventListener('click', () => {
+        startMusic();
+      });
+    }
+    
+    // Запуск музыки при первом любом касании/клике по странице
+    const interactionEvents = ['click', 'touchstart', 'keydown'];
+    const startMusicOnFirstInteraction = () => {
+      startMusic();
+      interactionEvents.forEach(event => {
+        document.removeEventListener(event, startMusicOnFirstInteraction);
+      });
+    };
+    
+    interactionEvents.forEach(event => {
+      document.addEventListener(event, startMusicOnFirstInteraction, { once: true });
+    });
+    
+    // Фоновые сердечки
+    setInterval(() => { if (Math.random() > 0.75) createFloatingHeart(); }, 5000);
+  })();
+</script>
+</body>
+</html>
