@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Викторина C++ · Структура и типы данных</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+        body {
+            font-family: -apple-system, 'Segoe UI', Roboto, system-ui, sans-serif;
+            background: #f0f4f8;
+            color: #1e293b;
+            padding: 8px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            touch-action: manipulation;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 8px 24px -8px rgba(0,0,0,0.10);
+            padding: 12px 10px 18px;
+        }
+        h1 {
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 4px;
+            border-bottom: 2px solid #e9edf2;
+            padding-bottom: 10px;
+            margin-bottom: 10px;
+        }
+        h1 small {
+            font-size: 0.6rem;
+            font-weight: 400;
+            color: #64748b;
+            margin-left: auto;
+            white-space: nowrap;
+        }
+        .stats-bar {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            background: #f8fafc;
+            border-radius: 30px;
+            padding: 5px 10px;
+            margin-bottom: 10px;
+            border: 1px solid #e2e8f0;
+            font-size: 0.65rem;
+            gap: 3px 6px;
+        }
+        .stats-bar span { display: inline-flex; align-items: center; gap: 2px; }
+        .badge { background: #dbeafe; color: #1e4a7a; border-radius: 30px; padding: 2px 8px; font-weight: 500; font-size: 0.6rem; }
+        .score-badge { background: #94a3b8; color: white; border-radius: 30px; padding: 2px 10px; font-weight: 600; font-size: 0.7rem; }
+        .menu-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 5px;
+            margin-bottom: 10px;
+            border-bottom: 1px dashed #d1d9e6;
+            padding-bottom: 8px;
+        }
+        .menu-btn {
+            background: transparent;
+            border: 1.5px solid #d1d9e6;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.55rem;
+            color: #334155;
+            cursor: pointer;
+            transition: 0.15s;
+            touch-action: manipulation;
+            white-space: nowrap;
+            min-height: 26px;
+            flex: 1 0 auto;
+            max-width: 48%;
+        }
+        .menu-btn:active { transform: scale(0.93); background: #eef2f6; }
+        .menu-btn.active { background: #1e293b; border-color: #1e293b; color: white; }
+        .question-panel {
+            background: #ffffff;
+            border-radius: 14px;
+            padding: 12px 10px 14px;
+            border: 1px solid #eef2f6;
+        }
+        .q-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            margin-bottom: 6px;
+            gap: 3px;
+        }
+        .q-tag { background: #e9edf2; padding: 2px 10px; border-radius: 30px; font-size: 0.55rem; font-weight: 600; color: #475569; }
+        .counter { font-size: 0.55rem; color: #475569; background: #f1f4f9; padding: 2px 8px; border-radius: 30px; }
+        .q-text {
+            font-size: 0.92rem;
+            font-weight: 500;
+            line-height: 1.5;
+            margin: 5px 0 10px;
+            background: #f8fafc;
+            padding: 10px 12px;
+            border-radius: 10px;
+            border-left: 4px solid #1e293b;
+        }
+        .q-text .hard { color: #b91c1c; font-weight: 700; font-size: 0.7rem; background: #fee2e2; padding: 2px 8px; border-radius: 30px; display: inline-block; margin-bottom: 4px; }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin: 6px 0 10px;
+        }
+        .option {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 8px 10px;
+            background: #fafcff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: 0.08s;
+            touch-action: manipulation;
+            min-height: 40px;
+        }
+        .option:active { transform: scale(0.97); background: #f1f5f9; }
+        .option input[type="radio"],
+        .option input[type="checkbox"] {
+            accent-color: #1e293b;
+            width: 20px;
+            height: 20px;
+            flex-shrink: 0;
+            margin-top: 1px;
+            cursor: pointer;
+        }
+        .option label {
+            flex: 1;
+            font-size: 0.85rem;
+            cursor: pointer;
+            line-height: 1.3;
+            word-break: break-word;
+        }
+        .option.disabled { opacity: 0.7; cursor: default; }
+        .option.disabled:active { transform: none; }
+        .option.selected { border-color: #1e293b; background: #f1f5f9; }
+        .action-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 6px;
+            margin-top: 2px;
+        }
+        .btn {
+            background: #1e293b;
+            color: white;
+            border: none;
+            padding: 6px 14px;
+            border-radius: 30px;
+            font-weight: 500;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: 0.1s;
+            touch-action: manipulation;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            min-height: 34px;
+        }
+        .btn:active { transform: scale(0.94); }
+        .btn-outline { background: transparent; color: #1e293b; border: 1.5px solid #cbd5e1; }
+        .btn-outline:active { background: #f1f5f9; }
+        .btn-success { background: #2b7a4b; }
+        .btn-success:active { background: #1e5f39; }
+        .btn-danger { background: #b91c1c; }
+        .btn-danger:active { background: #7f1d1d; }
+        .btn:disabled { opacity: 0.4; pointer-events: none; }
+        .nav-buttons { display: flex; gap: 5px; flex-wrap: wrap; }
+        .nav-buttons .btn { padding: 4px 10px; font-size: 0.65rem; min-height: 30px; }
+        .feedback {
+            margin-top: 8px;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            line-height: 1.4;
+            display: none;
+            background: #f8fafc;
+            border-left: 6px solid #94a3b8;
+        }
+        .feedback.show { display: block; }
+        .feedback.info { background: #f1f5f9; border-left-color: #64748b; }
+        .result-banner {
+            margin-top: 16px;
+            padding: 14px 12px;
+            border-radius: 14px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            display: none;
+            text-align: center;
+        }
+        .result-banner.show { display: block; }
+        .result-banner .score { font-size: 2.2rem; font-weight: 700; color: #1e293b; }
+        .result-banner .grade {
+            font-size: 1rem;
+            font-weight: 600;
+            margin-top: 4px;
+            padding: 4px 16px;
+            border-radius: 30px;
+            display: inline-block;
+        }
+        .grade-5 { background: #dcfce7; color: #166534; }
+        .grade-4 { background: #dbeafe; color: #1e4a7a; }
+        .grade-3 { background: #fef9c3; color: #854d0e; }
+        .grade-2 { background: #fee2e2; color: #991b1b; }
+        .retake-info {
+            margin-top: 10px;
+            padding: 8px 12px;
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: #78350f;
+        }
+        .retake-info strong { color: #92400e; }
+        .footer-note {
+            margin-top: 14px;
+            font-size: 0.55rem;
+            color: #64748b;
+            text-align: center;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+        }
+        @supports (padding: max(0px)) {
+            .container { padding-left: max(12px, env(safe-area-inset-left)); padding-right: max(12px, env(safe-area-inset-right)); }
+        }
+        @media (max-width: 480px) {
+            body { padding: 4px; }
+            .container { padding: 8px 6px 14px; border-radius: 16px; }
+            h1 { font-size: 1rem; }
+            h1 small { font-size: 0.5rem; }
+            .stats-bar { font-size: 0.55rem; padding: 4px 8px; gap: 2px 4px; }
+            .menu-btn { font-size: 0.5rem; padding: 3px 6px; min-height: 22px; max-width: 48%; }
+            .q-text { font-size: 0.82rem; padding: 8px 10px; }
+            .option { padding: 6px 8px; min-height: 34px; gap: 8px; }
+            .option input[type="radio"],
+            .option input[type="checkbox"] { width: 18px; height: 18px; }
+            .option label { font-size: 0.78rem; }
+            .btn { padding: 4px 10px; font-size: 0.6rem; min-height: 28px; }
+            .nav-buttons .btn { padding: 3px 8px; font-size: 0.55rem; min-height: 24px; }
+            .result-banner .score { font-size: 1.8rem; }
+            .feedback { font-size: 0.7rem; padding: 6px 10px; }
+        }
+        @media (max-width: 380px) {
+            .menu-btn { font-size: 0.45rem; padding: 2px 5px; }
+            .stats-bar span { font-size: 0.5rem; }
+            .q-text { font-size: 0.75rem; }
+            .option label { font-size: 0.72rem; }
+            .btn { font-size: 0.55rem; padding: 3px 8px; min-height: 24px; }
+        }
+        @media (max-width: 350px) {
+            .menu-btn { font-size: 0.4rem; padding: 2px 4px; min-height: 18px; }
+            .option { min-height: 28px; padding: 4px 6px; }
+            .option input[type="radio"],
+            .option input[type="checkbox"] { width: 16px; height: 16px; }
+        }
+        :focus { outline: none; }
+        .option:focus-within { outline: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>
+        🧠 Викторина C++
+        <small>Структура · Типы данных</small>
+    </h1>
+
+    <div class="stats-bar">
+        <span>📌 <span id="currentIdx">1</span>/<span id="totalQ">25</span></span>
+        <span>📝 <span id="answeredCount">0</span></span>
+        <span>📊 <span id="progress">0</span>%</span>
+        <span class="badge" id="sectionBadge">Все темы</span>
+        <span class="score-badge" id="scoreBadge">🔒</span>
+    </div>
+
+    <div class="menu-grid">
+        <button class="menu-btn active" data-section="all">📚 Все</button>
+        <button class="menu-btn" data-section="0">🏗️ Структура</button>
+        <button class="menu-btn" data-section="1">📊 Типы</button>
+        <button class="menu-btn" data-section="2">⭐ Сложные</button>
+    </div>
+
+    <div class="question-panel">
+        <div class="q-header">
+            <span class="q-tag" id="qTag">Вопрос 1</span>
+            <span class="counter" id="sectionCounter">Все темы · 1/25</span>
+        </div>
+        <div class="q-text" id="qText">Загрузка...</div>
+
+        <div class="options" id="optionsContainer"></div>
+
+        <div class="action-row">
+            <div class="nav-buttons">
+                <button class="btn btn-outline" id="prevBtn">◀</button>
+                <button class="btn btn-outline" id="nextBtn">▶</button>
+            </div>
+            <button class="btn btn-outline" id="resetBtn">🔄 Сброс</button>
+        </div>
+
+        <div class="feedback" id="feedback"></div>
+    </div>
+
+    <div class="result-banner" id="resultBanner">
+        <div class="label">🏆 Результат</div>
+        <div class="score" id="finalScore">0</div>
+        <div style="font-size: 0.8rem; color: #475569;">из 100 баллов</div>
+        <div class="grade" id="gradeBadge">—</div>
+        <div style="margin-top: 6px; font-size: 0.7rem; color: #64748b;">
+            Правильных: <span id="finalCorrect">0</span> из <span id="finalTotal">25</span>
+        </div>
+        <div style="margin-top: 4px; font-size: 0.7rem; color: #64748b;">
+            Попыток: <span id="attemptCount">1</span>
+        </div>
+        <div class="retake-info" id="retakeInfo">
+            ⚠️ <strong>Штраф за пересдачу: −20%</strong><br>
+            Каждая следующая попытка уменьшает итоговый балл на 20%
+        </div>
+        <button class="btn btn-danger" id="resetAllBtn" style="margin-top: 10px;">🔄 Пересдача (−20%)</button>
+    </div>
+
+    <div class="footer-note">
+        ⚡ 25 вопросов · Результат после всех вопросов · Штраф за пересдачу 20%
+    </div>
+</div>
+
+<script>
+(function() {
+    // ---------- ВОПРОСЫ (25) ----------
+    const questions = [
+        // === СТРУКТУРА ПРОГРАММЫ (0-9) ===
+        {
+            section: 0,
+            question: 'Какая функция является точкой входа в программу на C++?',
+            options: ['start()', 'begin()', 'main()', 'run()'],
+            correct: 2
+        },
+        {
+            section: 0,
+            question: 'Какой символ завершает каждый оператор в C++?',
+            options: ['.', ';', ':', ',' ],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Для чего используется директива `#include`?',
+            options: [
+                'Для объявления переменных',
+                'Для подключения библиотек',
+                'Для завершения программы',
+                'Для создания цикла'
+            ],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Что означает `return 0;` в конце программы?',
+            options: [
+                'Программа завершилась с ошибкой',
+                'Программа завершилась успешно',
+                'Программа должна продолжить работу',
+                'Это синтаксическая ошибка'
+            ],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Какие скобки используются для обозначения блоков кода?',
+            options: ['( )', '[ ]', '{ }', '< >'],
+            correct: 2
+        },
+        {
+            section: 0,
+            question: 'Что делает `using namespace std;`?',
+            options: [
+                'Подключает библиотеку std',
+                'Позволяет не писать `std::` перед стандартными функциями',
+                'Создаёт новое пространство имён',
+                'Это обязательная директива'
+            ],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Какой заголовочный файл нужен для ввода/вывода?',
+            options: ['<string>', '<iostream>', '<cmath>', '<vector>'],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Где должна находиться функция `main()`?',
+            options: ['В любом месте', 'В самом конце', 'В начале', 'Может отсутствовать'],
+            correct: 0
+        },
+        {
+            section: 0,
+            question: 'Какая часть программы выполняется первой?',
+            options: ['Первая функция', 'main()', 'Последняя функция', 'Никакая'],
+            correct: 1
+        },
+        {
+            section: 0,
+            question: 'Что является правильной структурой программы?',
+            options: [
+                '#include <iostream> int main() { return 0; }',
+                'int main() { #include <iostream> return 0; }',
+                'return 0; int main() { #include <iostream> }',
+                '#include <iostream> return 0; int main() {}'
+            ],
+            correct: 0
+        },
+        // === ТИПЫ ДАННЫХ (10-19) ===
+        {
+            section: 1,
+            question: 'Какой тип используется для хранения целых чисел?',
+            options: ['float', 'int', 'double', 'string'],
+            correct: 1
+        },
+        {
+            section: 1,
+            question: 'Какой тип используется для хранения дробных чисел?',
+            options: ['int', 'char', 'double', 'bool'],
+            correct: 2
+        },
+        {
+            section: 1,
+            question: 'Какой тип используется для одного символа?',
+            options: ['string', 'char', 'bool', 'int'],
+            correct: 1
+        },
+        {
+            section: 1,
+            question: 'Какой тип используется для текста?',
+            options: ['char', 'text', 'string', 'str'],
+            correct: 2
+        },
+        {
+            section: 1,
+            question: 'Какие значения принимает тип `bool`?',
+            options: ['0 и 1', 'true и false', 'yes и no', '+ и -'],
+            correct: 1
+        },
+        {
+            section: 1,
+            question: 'Сколько байтов обычно занимает тип `int`?',
+            options: ['1', '2', '4', '8'],
+            correct: 2
+        },
+        {
+            section: 1,
+            question: 'Какие кавычки используются для строк?',
+            options: ['Одинарные \'\'', 'Двойные " "', 'Квадратные []', 'Угловые <>'],
+            correct: 1
+        },
+        {
+            section: 1,
+            question: 'Какие кавычки используются для символов?',
+            options: ['Одинарные \'\'', 'Двойные " "', 'Квадратные []', 'Угловые <>'],
+            correct: 0
+        },
+        {
+            section: 1,
+            question: 'Что будет при делении `int a = 5; int b = 2; int c = a / b;`?',
+            options: ['c = 2.5', 'c = 2', 'c = 3', 'Ошибка'],
+            correct: 1
+        },
+        {
+            section: 1,
+            question: 'Какой тип данных самый маленький по размеру?',
+            options: ['int', 'double', 'char', 'bool'],
+            correct: 2
+        },
+        // === СЛОЖНЫЕ ВОПРОСЫ (20-24) ===
+        {
+            section: 2,
+            question: 'Что будет выведено на экран?\n\n```\nint x = 5;\ncout << x++;\ncout << ++x;\n```',
+            options: ['56', '67', '55', '66'],
+            correct: 1,
+            hard: true
+        },
+        {
+            section: 2,
+            question: 'Какая ошибка допущена в объявлении переменной?\n\n```\nint 1stNumber = 10;\n```',
+            options: [
+                'Имя начинается с цифры',
+                'Не указан тип',
+                'Пропущена точка с запятой',
+                'Нет ошибок'
+            ],
+            correct: 0,
+            hard: true
+        },
+        {
+            section: 2,
+            question: 'Чему равно значение переменной `z`?\n\n```\nint a = 7, b = 2;\ndouble z = a / b;\n```',
+            options: ['3.5', '3', '3.0', 'Ошибка'],
+            correct: 2,
+            hard: true
+        },
+        {
+            section: 2,
+            question: 'Какие типы данных позволяют хранить дробные числа?\n\n(Выберите все правильные)',
+            options: ['int', 'float', 'double', 'long'],
+            correct: [1, 2],
+            hard: true,
+            multi: true
+        },
+        {
+            section: 2,
+            question: 'В какой части программы можно объявить переменную, чтобы она была видна во всей программе?',
+            options: [
+                'Внутри функции main()',
+                'Внутри любого блока {}',
+                'В глобальной области (вне всех функций)',
+                'Внутри цикла for'
+            ],
+            correct: 2,
+            hard: true
+        }
+    ];
+
+    // ----- состояние -----
+    let currentIdx = 0;
+    let userAnswers = new Array(questions.length).fill(null);
+    let isAnswered = new Array(questions.length).fill(false);
+    let isResultShown = false;
+    let currentFilter = 'all';
+    let attemptCount = 1;
+    let retakePenalty = 0;
+
+    // DOM
+    const qText = document.getElementById('qText');
+    const optionsContainer = document.getElementById('optionsContainer');
+    const feedbackDiv = document.getElementById('feedback');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    const resetBtn = document.getElementById('resetBtn');
+    const resetAllBtn = document.getElementById('resetAllBtn');
+    const currentIdxDisplay = document.getElementById('currentIdx');
+    const totalQ = document.getElementById('totalQ');
+    const answeredCountSpan = document.getElementById('answeredCount');
+    const progressSpan = document.getElementById('progress');
+    const sectionBadge = document.getElementById('sectionBadge');
+    const qTag = document.getElementById('qTag');
+    const sectionCounter = document.getElementById('sectionCounter');
+    const scoreBadge = document.getElementById('scoreBadge');
+    const resultBanner = document.getElementById('resultBanner');
+    const finalScore = document.getElementById('finalScore');
+    const finalCorrect = document.getElementById('finalCorrect');
+    const finalTotal = document.getElementById('finalTotal');
+    const gradeBadge = document.getElementById('gradeBadge');
+    const attemptCountSpan = document.getElementById('attemptCount');
+    const retakeInfo = document.getElementById('retakeInfo');
+
+    const menuBtns = document.querySelectorAll('.menu-btn');
+
+    const sectionNames = ['🏗️ Структура', '📊 Типы данных', '⭐ Сложные'];
+    totalQ.textContent = questions.length;
+    finalTotal.textContent = questions.length;
+
+    // ----- функции -----
+    function getFilteredQuestions() {
+        if (currentFilter === 'all') return questions;
+        return questions.filter(q => q.section === parseInt(currentFilter));
+    }
+
+    function getGlobalIndex(localIdx) {
+        const filtered = getFilteredQuestions();
+        if (localIdx < 0 || localIdx >= filtered.length) return -1;
+        return questions.indexOf(filtered[localIdx]);
+    }
+
+    function getLocalIndex(globalIdx) {
+        const filtered = getFilteredQuestions();
+        return filtered.indexOf(questions[globalIdx]);
+    }
+
+    function getCurrentGlobal() {
+        const filtered = getFilteredQuestions();
+        if (currentIdx < 0 || currentIdx >= filtered.length) return 0;
+        return questions.indexOf(filtered[currentIdx]);
+    }
+
+    function calculateScore() {
+        let correct = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (isAnswered[i] && userAnswers[i] !== null) {
+                const q = questions[i];
+                if (q.multi) {
+                    const userAns = userAnswers[i];
+                    if (Array.isArray(userAns)) {
+                        const sortedUser = [...userAns].sort();
+                        const sortedCorrect = [...q.correct].sort();
+                        if (sortedUser.length === sortedCorrect.length && 
+                            sortedUser.every((v, idx) => v === sortedCorrect[idx])) {
+                            correct++;
+                        }
+                    }
+                } else {
+                    if (userAnswers[i] === q.correct) correct++;
+                }
+            }
+        }
+        const rawScore = Math.round((correct / questions.length) * 100);
+        const penalty = Math.min(retakePenalty, 80);
+        return Math.max(0, rawScore - penalty);
+    }
+
+    function getCorrectCount() {
+        let correct = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (isAnswered[i] && userAnswers[i] !== null) {
+                const q = questions[i];
+                if (q.multi) {
+                    const userAns = userAnswers[i];
+                    if (Array.isArray(userAns)) {
+                        const sortedUser = [...userAns].sort();
+                        const sortedCorrect = [...q.correct].sort();
+                        if (sortedUser.length === sortedCorrect.length && 
+                            sortedUser.every((v, idx) => v === sortedCorrect[idx])) {
+                            correct++;
+                        }
+                    }
+                } else {
+                    if (userAnswers[i] === q.correct) correct++;
+                }
+            }
+        }
+        return correct;
+    }
+
+    function updateStats() {
+        let answered = 0;
+        for (let i = 0; i < questions.length; i++) {
+            if (isAnswered[i]) answered++;
+        }
+        answeredCountSpan.textContent = answered;
+        const pct = Math.round((answered / questions.length) * 100);
+        progressSpan.textContent = pct;
+        scoreBadge.textContent = '🔒';
+
+        const allDone = (answered === questions.length);
+        if (allDone && !isResultShown) {
+            isResultShown = true;
+            const score = calculateScore();
+            const correct = getCorrectCount();
+            finalScore.textContent = score;
+            finalCorrect.textContent = correct;
+            let grade;
+            if (score >= 80) grade = { label: 'Отлично (5)', cls: 'grade-5' };
+            else if (score >= 60) grade = { label: 'Хорошо (4)', cls: 'grade-4' };
+            else if (score >= 40) grade = { label: 'Удовлетворительно (3)', cls: 'grade-3' };
+            else grade = { label: 'Неудовлетворительно (2)', cls: 'grade-2' };
+            gradeBadge.textContent = grade.label;
+            gradeBadge.className = `grade ${grade.cls}`;
+            resultBanner.classList.add('show');
+            scoreBadge.textContent = `⭐ ${score}`;
+            attemptCountSpan.textContent = attemptCount;
+            if (retakePenalty > 0) {
+                retakeInfo.innerHTML = `⚠️ <strong>Штраф за пересдачу: −${retakePenalty}%</strong><br>Итоговый балл уменьшен на ${retakePenalty}%`;
+            } else {
+                retakeInfo.innerHTML = '✅ <strong>Первая попытка</strong><br>Штраф за пересдачу отсутствует';
+            }
+        }
+    }
+
+    function loadQuestion(globalIdx) {
+        if (globalIdx < 0 || globalIdx >= questions.length) return;
+        const q = questions[globalIdx];
+        const filtered = getFilteredQuestions();
+        const localIdx = filtered.indexOf(q);
+        if (localIdx === -1) {
+            if (filtered.length > 0) {
+                const firstGlobal = questions.indexOf(filtered[0]);
+                loadQuestion(firstGlobal);
+                currentIdx = 0;
+            }
+            return;
+        }
+        currentIdx = localIdx;
+
+        currentIdxDisplay.textContent = localIdx + 1;
+        const totalFiltered = filtered.length;
+        qTag.textContent = `Вопрос ${localIdx + 1}`;
+        const sectionName = q.section >= 0 ? sectionNames[q.section] : 'Общий';
+        sectionBadge.textContent = sectionName;
+        sectionCounter.textContent = `${sectionName} · ${localIdx + 1}/${totalFiltered}`;
+
+        let questionText = q.question;
+        if (q.hard) {
+            questionText = `<span class="hard">⭐ СЛОЖНЫЙ</span><br><br>${q.question}`;
+        }
+        if (q.multi) {
+            questionText += '<br><br><span style="font-size:0.8rem;color:#64748b;">(Выберите все правильные ответы)</span>';
+        }
+        qText.innerHTML = questionText;
+
+        optionsContainer.innerHTML = '';
+        const answered = isAnswered[globalIdx];
+        const selected = userAnswers[globalIdx];
+
+        q.options.forEach((opt, idx) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            if (answered) {
+                div.classList.add('disabled');
+                if (q.multi) {
+                    if (Array.isArray(selected) && selected.includes(idx)) {
+                        div.classList.add('selected');
+                    }
+                } else {
+                    if (selected === idx) div.classList.add('selected');
+                }
+            } else {
+                if (q.multi) {
+                    if (Array.isArray(selected) && selected.includes(idx)) {
+                        div.classList.add('selected');
+                    }
+                } else {
+                    if (selected === idx) div.classList.add('selected');
+                }
+            }
+
+            const input = document.createElement('input');
+            input.type = q.multi ? 'checkbox' : 'radio';
+            input.name = 'choice';
+            input.value = idx;
+            input.id = `opt_${idx}`;
+            if (q.multi) {
+                if (Array.isArray(selected) && selected.includes(idx)) {
+                    input.checked = true;
+                }
+            } else {
+                if (selected === idx) input.checked = true;
+            }
+            if (answered) input.disabled = true;
+
+            const label = document.createElement('label');
+            label.htmlFor = `opt_${idx}`;
+            label.textContent = opt;
+            div.appendChild(input);
+            div.appendChild(label);
+            optionsContainer.appendChild(div);
+
+            if (!answered) {
+                div.addEventListener('click', function() {
+                    if (isAnswered[globalIdx]) return;
+                    const inp = this.querySelector('input');
+                    if (inp && !inp.disabled) {
+                        if (q.multi) {
+                            if (!Array.isArray(userAnswers[globalIdx])) {
+                                userAnswers[globalIdx] = [];
+                            }
+                            const currentSelection = userAnswers[globalIdx];
+                            const val = parseInt(inp.value);
+                            if (inp.checked) {
+                                if (!currentSelection.includes(val)) {
+                                    currentSelection.push(val);
+                                }
+                            } else {
+                                const index = currentSelection.indexOf(val);
+                                if (index > -1) {
+                                    currentSelection.splice(index, 1);
+                                }
+                            }
+                            userAnswers[globalIdx].sort((a, b) => a - b);
+                            loadQuestion(globalIdx);
+                        } else {
+                            inp.checked = true;
+                            userAnswers[globalIdx] = parseInt(inp.value);
+                            isAnswered[globalIdx] = true;
+                            loadQuestion(globalIdx);
+                            updateStats();
+                            if (!isResultShown && currentIdx < filtered.length - 1) {
+                                setTimeout(() => {
+                                    const nextGlobal = questions.indexOf(filtered[currentIdx + 1]);
+                                    if (nextGlobal !== -1) loadQuestion(nextGlobal);
+                                }, 300);
+                            }
+                        }
+                    }
+                });
+                input.addEventListener('change', function(e) {
+                    e.stopPropagation();
+                    if (isAnswered[globalIdx]) return;
+                    if (q.multi) {
+                        if (!Array.isArray(userAnswers[globalIdx])) {
+                            userAnswers[globalIdx] = [];
+                        }
+                        const currentSelection = userAnswers[globalIdx];
+                        const val = parseInt(this.value);
+                        if (this.checked) {
+                            if (!currentSelection.includes(val)) {
+                                currentSelection.push(val);
+                            }
+                        } else {
+                            const index = currentSelection.indexOf(val);
+                            if (index > -1) {
+                                currentSelection.splice(index, 1);
+                            }
+                        }
+                        userAnswers[globalIdx].sort((a, b) => a - b);
+                        loadQuestion(globalIdx);
+                    } else {
+                        userAnswers[globalIdx] = parseInt(this.value);
+                        isAnswered[globalIdx] = true;
+                        loadQuestion(globalIdx);
+                        updateStats();
+                        if (!isResultShown && currentIdx < filtered.length - 1) {
+                            setTimeout(() => {
+                                const nextGlobal = questions.indexOf(filtered[currentIdx + 1]);
+                                if (nextGlobal !== -1) loadQuestion(nextGlobal);
+                            }, 300);
+                        }
+                    }
+                });
+            }
+        });
+
+        if (isAnswered[globalIdx]) {
+            feedbackDiv.className = 'feedback show info';
+            feedbackDiv.innerHTML = '✅ Ответ принят';
+            feedbackDiv.style.display = 'block';
+        } else {
+            feedbackDiv.className = 'feedback';
+            feedbackDiv.style.display = 'none';
+        }
+
+        updateStats();
+    }
+
+    function goTo(localIdx) {
+        const filtered = getFilteredQuestions();
+        if (localIdx < 0 || localIdx >= filtered.length) return;
+        const globalIdx = questions.indexOf(filtered[localIdx]);
+        if (globalIdx !== -1) loadQuestion(globalIdx);
+    }
+
+    function nextQuestion() {
+        const filtered = getFilteredQuestions();
+        if (currentIdx < filtered.length - 1) goTo(currentIdx + 1);
+    }
+
+    function prevQuestion() {
+        if (currentIdx > 0) goTo(currentIdx - 1);
+    }
+
+    function filterBySection(section) {
+        currentFilter = section;
+        menuBtns.forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.section === section);
+        });
+        const filtered = getFilteredQuestions();
+        if (filtered.length > 0) {
+            const firstGlobal = questions.indexOf(filtered[0]);
+            if (firstGlobal !== -1) loadQuestion(firstGlobal);
+        }
+    }
+
+    function resetAll() {
+        // Пересдача — штраф 20%
+        if (isResultShown) {
+            attemptCount++;
+            retakePenalty = Math.min(retakePenalty + 20, 80);
+        }
+        userAnswers.fill(null);
+        isAnswered.fill(false);
+        isResultShown = false;
+        resultBanner.classList.remove('show');
+        const filtered = getFilteredQuestions();
+        if (filtered.length > 0) {
+            const firstGlobal = questions.indexOf(filtered[0]);
+            if (firstGlobal !== -1) loadQuestion(firstGlobal);
+        }
+    }
+
+    function resetFull() {
+        // Полный сброс без штрафа (кнопка "Сброс")
+        userAnswers.fill(null);
+        isAnswered.fill(false);
+        isResultShown = false;
+        resultBanner.classList.remove('show');
+        const filtered = getFilteredQuestions();
+        if (filtered.length > 0) {
+            const firstGlobal = questions.indexOf(filtered[0]);
+            if (firstGlobal !== -1) loadQuestion(firstGlobal);
+        }
+    }
+
+    // ----- инициализация -----
+    function init() {
+        menuBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                filterBySection(this.dataset.section);
+            });
+        });
+
+        prevBtn.addEventListener('click', prevQuestion);
+        nextBtn.addEventListener('click', nextQuestion);
+        resetBtn.addEventListener('click', resetFull);
+        resetAllBtn.addEventListener('click', resetAll);
+
+        // Свайпы для мобильных
+        let touchStartX = 0;
+        document.addEventListener('touchstart', function(e) {
+            touchStartX = e.changedTouches[0].screenX;
+        }, { passive: true });
+        document.addEventListener('touchend', function(e) {
+            const diff = touchStartX - e.changedTouches[0].screenX;
+            if (Math.abs(diff) > 40) {
+                if (diff > 0) nextQuestion();
+                else prevQuestion();
+            }
+        }, { passive: true });
+
+        filterBySection('all');
+    }
+
+    init();
+})();
+</script>
+</body>
+</html>
